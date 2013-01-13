@@ -17,7 +17,7 @@ int main(int argc, char **argv)
   printf("My rank: %i\n", rank);
 
 /*  testVector(); */
-
+/*
   unsigned int * global_nonzero_entries_per_row = malloc( 2 * sizeof(unsigned int) );
 
   global_nonzero_entries_per_row[0] = 1;
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   setGlobalSparseMatrixEntry(mat, 1, 1, 3);
 
   printSparseMatrix(mat);
-
+*/
   struct SparseMatrix * mat2 = readCRSSparseMatrix("dummy.crs");
 
   printSparseMatrix(mat2);

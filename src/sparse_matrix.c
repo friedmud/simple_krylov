@@ -25,13 +25,14 @@ createParallelSparseMatrix(const unsigned int global_rows, const unsigned int gl
 
   unsigned int first_local_row = rank * local_rows;
   mat->first_local_row = first_local_row;
-  mat->last_local_row = first_local_row + local_rows;
 
   /* If this is the last process add any extra rows in case things aren't even */
   if(rank == ntasks - 1)
     local_rows += global_rows % ntasks;
 
   mat->local_rows = local_rows;
+
+  mat->last_local_row = first_local_row + local_rows;
 
   mat->nonzero_entries_per_row = malloc( local_rows * sizeof(unsigned int) );
 
@@ -135,7 +136,6 @@ readCRSSparseMatrix(char * file_name)
 
   unsigned int first_local_row = rank * local_rows;
   mat->first_local_row = first_local_row;
-  mat->last_local_row = first_local_row + local_rows;
 
   /* If this is the last process add any extra rows in case things aren't even */
   if(rank == ntasks - 1)
@@ -143,11 +143,22 @@ readCRSSparseMatrix(char * file_name)
 
   mat->local_rows = local_rows;
 
+  mat->last_local_row = first_local_row + local_rows;
+
   mat->nonzero_entries_per_row = malloc( local_rows * sizeof(unsigned int) );
   mat->nonzero_entries = malloc( local_rows * sizeof(unsigned int *) );
   mat->vals = malloc( local_rows * sizeof(double *) );
 
   unsigned int i=0;
+
+  /* Chew up rows until we get to the section that is going to be on this processor */
+  for(i=0; i<first_local_row; i++)
+  {
+    if(fgets(line, 100000, fr) == NULL)
+      break;
+  }
+
+  /* Read in the rows we're going to store on this processor */
   for(i=0; i<local_rows; i++)
   {
     if(fgets(line, 100000, fr) == NULL)

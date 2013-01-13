@@ -73,5 +73,4 @@ double getGlobalSparseMatrixEntry(const struct SparseMatrix * mat, const unsigne
  */
 void setGlobalSparseMatrixEntry(struct SparseMatrix * mat, const unsigned int global_row, const unsigned int global_col, const double value);
 
-
 #endif //SPARSEMATRIX
