@@ -3,11 +3,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <math.h>
+#include <assert.h>
 
 struct Vector *
-createVector(unsigned int global_size)
+createSerialVector(unsigned int size)
 {
   struct Vector * vec = malloc( sizeof(struct Vector) );
+
+  vec->parallel = 0;
+  vec->global_size = size;
+  vec->local_size = size;
+  vec->first_local_entry = 0;
+  vec->vals = malloc( size * sizeof(double) );
+  
+  return vec;
+}
+
+struct Vector *
+createParallelVector(unsigned int global_size)
+{
+  struct Vector * vec = malloc( sizeof(struct Vector) );
+
+  vec->parallel = 1;
   vec->global_size = global_size;
 
   int rank, ntasks;  
@@ -50,3 +68,63 @@ void printVector(struct Vector * vec)
     printf("%i vec[%i]: %f\n", rank, vec->first_local_entry + i, vals[i]);  
 }
 
+double vector2Norm(struct Vector * vec)
+{
+  double * vals = vec->vals;
+  
+  double local_norm = 0;
+
+  unsigned int i = 0;
+  for(i=0; i<vec->local_size; i++)
+    local_norm += vals[i] * vals[i];
+
+  double global_norm = 0;
+  MPI_Allreduce(&local_norm, &global_norm, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+  global_norm = sqrt(global_norm);
+
+  return global_norm;
+}
+
+double vectorDot(struct Vector * a, struct Vector * b)
+{
+  assert(a->global_size == b->global_size);
+  
+  double * a_vals = a->vals;
+  double * b_vals = b->vals;
+  
+  double local_dot = 0;
+
+  /* If they are both parallel then we can just multiply them */
+  if(a->parallel && b->parallel)
+  {
+    int local_size = a->local_size;
+    
+    unsigned int i = 0;
+    for(i=0; i<local_size; i++)
+      local_dot += a_vals[i] * b_vals[i];
+  }
+  else if(a->parallel) /* b is parallel */
+  {
+    int local_size = a->local_size;
+    int first_local_entry = a->first_local_entry;
+    
+    unsigned int i = 0;
+    for(i=0; i<local_size; i++)
+      local_dot += a_vals[i] * b_vals[first_local_entry + i];
+  }
+  else /* a is parallel */
+  {
+    int local_size = b->local_size;
+    int first_local_entry = b->first_local_entry;
+    
+    unsigned int i = 0;
+    for(i=0; i<local_size; i++)
+      local_dot += a_vals[first_local_entry + i] * b_vals[i];
+  }
+
+  double global_dot = 0;
+  MPI_Allreduce(&local_dot, &global_dot, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+  return global_dot;
+}
