@@ -49,6 +49,13 @@ createParallelVector(unsigned int global_size)
 }
 
 void
+destroyVector(struct Vector * vec)
+{
+  free(vec->vals);
+  free(vec);
+}
+
+void
 printVectorInformation(struct Vector * vec)
 {
   int rank;

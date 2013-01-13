@@ -26,6 +26,11 @@ struct Vector * createSerialVector(unsigned int size);
 struct Vector * createParallelVector(unsigned int global_size);
 
 /**
+ * Release memory associated with a vector.
+ */
+void destroyVector(struct Vector * vec);
+
+/**
  * Print out all vector information.
  *
  * @vec The vector you want to print information about.

@@ -53,4 +53,7 @@ void testVector()
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     printf("%i vectorDot: %f\n", rank, dot);
   }
+
+  destroyVector(vec);
+  destroyVector(vec2);
 }
