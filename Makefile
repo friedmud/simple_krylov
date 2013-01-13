@@ -1,4 +1,4 @@
-CC = gcc
+CC = mpicc
 
 CFLAGS = -Wall -g
 
@@ -22,7 +22,7 @@ $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
 clean:
-	$(RM) -rf *.o *~ $(PROG) */*.o */*/*.o
+	$(RM) -rf *.o *~ $(PROG) */*.o */*/*.o *~* */*~* */*/*~*
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^
