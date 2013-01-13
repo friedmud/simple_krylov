@@ -1,22 +1,30 @@
 #include <stdio.h>
+#include <mpi.h>
 
 #include "vector.h"
 
-int main()
+int main(int argc, char **argv)
 {
-  struct Vector * vec = createVector(10);
+  int rank;
 
-  printf("Size of vec: %i\n", vec->size);
+  MPI_Init(&argc, &argv);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  printf("My rank: %i\n", rank);
+  
+  struct Vector * vec = createVector(11);
+
+  printVectorInformation(vec);
 
   double * vals = vec->vals;
 
-  unsigned int i=0;
+  unsigned int i = 0;
 
-  for(i=0; i<vec->size; i++)
-    vals[i] = i;
+  for(i=0; i<vec->local_size; i++)
+    vals[i] = vec->first_local_entry + i;
 
-  for(i=0; i<vec->size; i++)
-    printf("Val: %f\n", vals[i]);
-  
+  printVector(vec);
+
+  MPI_Finalize();
   return 0;
 }
