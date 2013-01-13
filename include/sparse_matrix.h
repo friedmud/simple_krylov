@@ -36,7 +36,7 @@ struct SparseMatrix
 /**
  * Create a Parallel SparseMatrix
  */
-struct SparseMatrix * createParallelSparseMatrix(unsigned int global_rows, unsigned int global_cols, unsigned int * global_nonzero_entries_per_row, unsigned int ** global_nonzero_entries);
+struct SparseMatrix * createParallelSparseMatrix(const unsigned int global_rows, const  unsigned int global_cols, const unsigned int * global_nonzero_entries_per_row, unsigned int ** global_nonzero_entries);
 
 /**
  * Destroy a SparseMatrix.
@@ -46,7 +46,16 @@ void destroySparseMatrix(struct SparseMatrix * mat);
 /**
  * Print out the entries of a SparseMatrix
  */
-void printSparseMatrix(struct SparseMatrix * mat);
+void printSparseMatrix(const struct SparseMatrix * mat);
+
+/**
+ * Read a matrix from a file in CRS format
+ * 
+ * Format is as follows:
+ * global_rows global_cols
+ * num_nonzero_entries col_nums vals
+ */
+struct SparseMatrix * readCRSSparseMatrix(char * file_name);
 
 /**
  * Get an entry in the matrix given global rows and columns.
@@ -54,7 +63,7 @@ void printSparseMatrix(struct SparseMatrix * mat);
  *
  * Also note that you cannot call this with a global_row that is not on the current processor!
  */
-double getGlobalSparseMatrixEntry(struct SparseMatrix * mat, unsigned int global_row, unsigned int global_col);
+double getGlobalSparseMatrixEntry(const struct SparseMatrix * mat, const unsigned int global_row, const unsigned int global_col);
 
 /**
  * Set an entry in the matrix given global rows and columns.
@@ -62,7 +71,7 @@ double getGlobalSparseMatrixEntry(struct SparseMatrix * mat, unsigned int global
  * 
  * Also note that you cannot call this with a global_row that is not on the current processor!
  */
-void setGlobalSparseMatrixEntry(struct SparseMatrix * mat, unsigned int global_row, unsigned int global_col, double value);
+void setGlobalSparseMatrixEntry(struct SparseMatrix * mat, const unsigned int global_row, const unsigned int global_col, const double value);
 
 
 #endif //SPARSEMATRIX

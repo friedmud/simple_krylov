@@ -40,6 +40,10 @@ int main(int argc, char **argv)
 
   printSparseMatrix(mat);
 
+  struct SparseMatrix * mat2 = readCRSSparseMatrix("dummy.crs");
+
+  printSparseMatrix(mat2);
+
   MPI_Finalize();
   return 0;
 }
